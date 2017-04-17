@@ -120,9 +120,6 @@ static inline v8si impl_mm256_##fn(v8si x, int a) \
   return(ret); \
 }
 
-AVX2_BITOP_IMPL(slli_epi32)
-AVX2_BITOP_IMPL(srli_epi32)
-
 #define AVX2_INTOP_IMPL(fn) \
 static inline v8si impl_mm256_##fn(v8si x, v8si y) \
 { \
@@ -140,9 +137,6 @@ static inline v8si impl_mm256_##fn(v8si x, v8si y) \
 
 AVX2_INTOP_IMPL(and_si128)
 AVX2_INTOP_IMPL(andnot_si128)
-AVX2_INTOP_IMPL(cmpeq_epi32)
-AVX2_INTOP_IMPL(sub_epi32)
-AVX2_INTOP_IMPL(add_epi32)
 
 #else /* __AVX2__ */
 
@@ -155,6 +149,12 @@ static inline v8si impl_mm256_##fn(v8si x, v8si y) \
 { return _mm256_##fn(x,y); }
 
 #endif /* __AVX2__ */
+
+AVX2_BITOP_IMPL(slli_epi32)
+AVX2_BITOP_IMPL(srli_epi32)
+AVX2_INTOP_IMPL(cmpeq_epi32)
+AVX2_INTOP_IMPL(sub_epi32)
+AVX2_INTOP_IMPL(add_epi32)
 
 /* natural logarithm computed for 8 simultaneous float 
    return NaN for x <= 0
@@ -169,14 +169,14 @@ v8sf log256_ps(v8sf x) {
   x = _mm256_max_ps(x, *(v8sf*)_ps256_min_norm_pos);  /* cut off denormalized stuff */
 
   // can be done with AVX2
-  imm0 = _mm256_srli_epi32(_mm256_castps_si256(x), 23);
+  imm0 = impl_mm256_srli_epi32(_mm256_castps_si256(x), 23);
 
   /* keep only the fractional part */
   x = _mm256_and_ps(x, *(v8sf*)_ps256_inv_mant_mask);
   x = _mm256_or_ps(x, *(v8sf*)_ps256_0p5);
 
   // this is again another AVX2 instruction
-  imm0 = _mm256_sub_epi32(imm0, *(v8si*)_pi32_256_0x7f);
+  imm0 = impl_mm256_sub_epi32(imm0, *(v8si*)_pi32_256_0x7f);
   v8sf e = _mm256_cvtepi32_ps(imm0);
 
   e = _mm256_add_ps(e, one);
@@ -294,8 +294,8 @@ v8sf exp256_ps(v8sf x) {
   /* build 2^n */
   imm0 = _mm256_cvttps_epi32(fx);
   // another two AVX2 instructions
-  imm0 = _mm256_add_epi32(imm0, *(v8si*)_pi32_256_0x7f);
-  imm0 = _mm256_slli_epi32(imm0, 23);
+  imm0 = impl_mm256_add_epi32(imm0, *(v8si*)_pi32_256_0x7f);
+  imm0 = impl_mm256_slli_epi32(imm0, 23);
   v8sf pow2n = _mm256_castsi256_ps(imm0);
   y = _mm256_mul_ps(y, pow2n);
   return y;
