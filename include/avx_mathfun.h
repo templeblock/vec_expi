@@ -120,7 +120,6 @@ static inline v8si _mm256_##fn(v8si x, int a) \
   return(ret); \
 }
 
-#warning "Using SSE2 to perform AVX2 bitshift ops"
 AVX2_BITOP_USING_SSE2(slli_epi32)
 AVX2_BITOP_USING_SSE2(srli_epi32)
 
@@ -139,7 +138,6 @@ static inline v8si _mm256_##fn(v8si x, v8si y) \
   return(ret); \
 }
 
-#warning "Using SSE2 to perform AVX2 integer ops"
 AVX2_INTOP_USING_SSE2(and_si128)
 AVX2_INTOP_USING_SSE2(andnot_si128)
 AVX2_INTOP_USING_SSE2(cmpeq_epi32)
