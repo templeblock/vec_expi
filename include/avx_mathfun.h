@@ -107,8 +107,8 @@ typedef union imm_xmm_union {
   }
 
 
-#define AVX2_BITOP_USING_SSE2(fn) \
-static inline v8si _mm256_##fn(v8si x, int a) \
+#define AVX2_BITOP_IMPL(fn) \
+static inline v8si impl_mm256_##fn(v8si x, int a) \
 { \
   /* use SSE2 instruction to perform the bitop AVX2 */ \
   v4si x1, x2; \
@@ -120,11 +120,11 @@ static inline v8si _mm256_##fn(v8si x, int a) \
   return(ret); \
 }
 
-AVX2_BITOP_USING_SSE2(slli_epi32)
-AVX2_BITOP_USING_SSE2(srli_epi32)
+AVX2_BITOP_IMPL(slli_epi32)
+AVX2_BITOP_IMPL(srli_epi32)
 
-#define AVX2_INTOP_USING_SSE2(fn) \
-static inline v8si _mm256_##fn(v8si x, v8si y) \
+#define AVX2_INTOP_IMPL(fn) \
+static inline v8si impl_mm256_##fn(v8si x, v8si y) \
 { \
   /* use SSE2 instructions to perform the AVX2 integer operation */ \
   v4si x1, x2; \
@@ -138,12 +138,11 @@ static inline v8si _mm256_##fn(v8si x, v8si y) \
   return(ret); \
 }
 
-AVX2_INTOP_USING_SSE2(and_si128)
-AVX2_INTOP_USING_SSE2(andnot_si128)
-AVX2_INTOP_USING_SSE2(cmpeq_epi32)
-AVX2_INTOP_USING_SSE2(sub_epi32)
-AVX2_INTOP_USING_SSE2(add_epi32)
-
+AVX2_INTOP_IMPL(and_si128)
+AVX2_INTOP_IMPL(andnot_si128)
+AVX2_INTOP_IMPL(cmpeq_epi32)
+AVX2_INTOP_IMPL(sub_epi32)
+AVX2_INTOP_IMPL(add_epi32)
 #endif /* __AVX2__ */
 
 
