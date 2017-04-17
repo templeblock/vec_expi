@@ -143,8 +143,18 @@ AVX2_INTOP_IMPL(andnot_si128)
 AVX2_INTOP_IMPL(cmpeq_epi32)
 AVX2_INTOP_IMPL(sub_epi32)
 AVX2_INTOP_IMPL(add_epi32)
-#endif /* __AVX2__ */
 
+#else /* __AVX2__ */
+
+#define AVX2_BITOP_IMPL(fn) \
+static inline v8si impl_mm256_##fn(v8si x, int a) \
+{ return _mm256_##fn(x,a); }
+
+#define AVX2_INTOP_IMPL(fn) \
+static inline v8si impl_mm256_##fn(v8si x, v8si y) \
+{ return _mm256_##fn(x,y); }
+
+#endif /* __AVX2__ */
 
 /* natural logarithm computed for 8 simultaneous float 
    return NaN for x <= 0
