@@ -34,9 +34,19 @@ provide support for x86 SIMD instructions.
 These libraries provide a `sincos` function that computes `sin` and `cos`
 together. From the library:
 
-    Since sin_ps and cos_ps are almost identical, sincos_ps could replace
-    both of them. It is almost as fast, and gives you a free cosine with
-    your sine.
+> Since sin_ps and cos_ps are almost identical, sincos_ps could replace
+> both of them. It is almost as fast, and gives you a free cosine with
+> your sine.
 
-`sse_mathfun.h` is included 'as is' from its website, but `avx_mathfun.h`
-needed some modification to work on AVX2 and on new compilers with AVX.
+`sse_mathfun.h` is included 'as is' from its website.
+
+`avx_mathfun.h` needed a fair bit of modification to work with both gcc and
+clang. It previously worked by defining AVX2 intrinsics (implemented with
+SSE2) when AVX2 was not enabled. However, clang defines these intrinsics even
+when AVX2 is not enabled, which caused redefinition errors throughout.
+
+This modified version uses AVX2 intrinsics prefixed with `impl` to get a
+different symbol name. If AVX2 is defined, then a forwarding function is
+defined and the AVX2 intrinsic is called directly. If AVX2 is not defined,
+the `impl` functions call SSE2 instructions that implement that AVX2
+instruction.
